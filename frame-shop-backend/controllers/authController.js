@@ -162,7 +162,6 @@ exports.login = async (req, res) => {
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
-
 // Resend OTP
 exports.resendOtp = async (req, res) => {
   const { phone } = req.body;
