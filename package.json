@@ -6,6 +6,7 @@
     "mongoose": "^8.16.5",
     "otp-generator": "^4.0.1",
     "password-validator": "^5.3.0",
-    "uuid": "^11.1.0"
+    "uuid": "^11.1.0",
+    "zxcvbn": "^4.4.2"
   }
 }

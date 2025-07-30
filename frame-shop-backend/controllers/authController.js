@@ -50,6 +50,7 @@ const jwt = require("jsonwebtoken");
 const otpGenerator = require("otp-generator");
 const { sendSMS } = require("../utils/sendSms"); // Fixed import path
 const PasswordValidator = require('password-validator');
+const logActivity = require('../middleware/activityLogger');
 
 // Password policy schema
 const passwordSchema = new PasswordValidator();
@@ -154,6 +155,17 @@ exports.login = async (req, res) => {
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
 
+    // Log login activity (non-blocking, error-safe)
+    try {
+      logActivity({
+        userId: user._id,
+        action: 'login',
+        details: `User ${user.email} logged in`,
+        ip: req.ip
+      });
+    } catch (e) {
+      // Logging error is ignored
+    }
     res.status(200).json({
       user: { id: user._id, name: user.name, email: user.email, role: user.role },
       token,
@@ -200,4 +212,30 @@ exports.passwordStrength = (req, res) => {
   const validation = passwordSchema.validate(password, { list: true });
   const isStrong = validation.length === 0;
   res.json({ isStrong, failedRules: validation });
+};
+
+// Password reset endpoint (add logging)
+exports.resetPassword = async (req, res) => {
+  const { email, newPassword } = req.body;
+  try {
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    user.password = await bcrypt.hash(newPassword, 10);
+    await user.save();
+
+    // Log password reset
+    try {
+      await logActivity({
+        userId: user._id,
+        action: 'reset_password',
+        details: `Password reset for ${user.email}`,
+        ip: req.ip
+      });
+    } catch (e) { }
+
+    res.status(200).json({ message: 'Password reset successful' });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
 };

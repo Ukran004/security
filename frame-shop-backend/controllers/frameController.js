@@ -1,4 +1,5 @@
 const Helmet = require("../models/Helmet");
+const logActivity = require('../middleware/activityLogger');
 
 // Get all helmets with filtering and pagination
 exports.getAllHelmets = async (req, res) => {
@@ -135,6 +136,17 @@ exports.createHelmet = async (req, res) => {
   try {
     const helmet = new Helmet(req.body);
     await helmet.save();
+
+    // Log product creation
+    try {
+      await logActivity({
+        userId: req.user?._id,
+        action: 'create_product',
+        details: `Helmet created: ${helmet.name || helmet._id}`,
+        ip: req.ip
+      });
+    } catch (e) { }
+
     res.status(201).json(helmet);
   } catch (err) {
     console.error("Error creating helmet:", err);
@@ -151,6 +163,16 @@ exports.updateHelmet = async (req, res) => {
       return res.status(404).json({ message: "Helmet not found" });
     }
 
+    // Log product update
+    try {
+      await logActivity({
+        userId: req.user?._id,
+        action: 'update_product',
+        details: `Helmet updated: ${helmet.name || helmet._id}`,
+        ip: req.ip
+      });
+    } catch (e) { }
+
     res.status(200).json(helmet);
   } catch (err) {
     console.error("Error updating helmet:", err);
@@ -166,6 +188,16 @@ exports.deleteHelmet = async (req, res) => {
     if (!helmet) {
       return res.status(404).json({ message: "Helmet not found" });
     }
+
+    // Log product deletion
+    try {
+      await logActivity({
+        userId: req.user?._id,
+        action: 'delete_product',
+        details: `Helmet deleted: ${helmet.name || helmet._id}`,
+        ip: req.ip
+      });
+    } catch (e) { }
 
     res.status(200).json({ message: "Helmet deleted successfully" });
   } catch (err) {

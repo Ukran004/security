@@ -48,6 +48,7 @@ app.use("/api/helmet-configs", require("./routes/frameConfigRoutes")); // Update
 app.use("/api/orders", require("./routes/orderRoutes"));
 app.use("/api/upload", require("./routes/uploadRoutes"));
 app.use("/api/payments", require("./routes/paymentRoutes"));
+app.use("/api/activity-logs", require("./routes/activityLogRoutes"));
 
 // 404 Handler
 app.use((req, res) => {
