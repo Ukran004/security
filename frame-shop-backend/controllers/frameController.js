@@ -1,7 +1,7 @@
 const Helmet = require("../models/Helmet");
 const logActivity = require('../middleware/activityLogger');
 
-// 
+
 exports.getAllHelmets = async (req, res) => {
   try {
     const {
