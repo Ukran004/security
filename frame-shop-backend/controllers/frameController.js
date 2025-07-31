@@ -41,7 +41,7 @@ exports.getAllHelmets = async (req, res) => {
       ];
     }
 
-    // Sort
+    // Sor
     const sortOptions = {};
     sortOptions[sortBy] = sortOrder === 'desc' ? -1 : 1;
 
