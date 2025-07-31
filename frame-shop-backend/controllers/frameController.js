@@ -32,7 +32,7 @@ exports.getAllHelmets = async (req, res) => {
       if (maxPrice) filter.price.$lte = parseFloat(maxPrice);
     }
 
-    // Search functional
+    // Search functiona
     if (search) {
       filter.$or = [
         { name: { $regex: search, $options: 'i' } },
