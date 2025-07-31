@@ -69,7 +69,7 @@ exports.getAllHelmets = async (req, res) => {
   }
 };
 
-// Get single helmet by 
+// Get single helmet b
 exports.getHelmetById = async (req, res) => {
   try {
     const helmet = await Helmet.findById(req.params.id);
