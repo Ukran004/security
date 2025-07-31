@@ -10,8 +10,6 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const xss = require('xss-clean');
 const { body, validationResult } = require('express-validator');
-const helmet = require('helmet');
-const csurf = require('csurf');
 
 // Connect to MongoDB
 connectDB();
@@ -22,17 +20,6 @@ app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 // XSS Protection Middleware
 app.use(xss());
-// Helmet.js security headers
-app.use(helmet());
-app.use(helmet.contentSecurityPolicy({
-  directives: {
-    defaultSrc: ["'self'"],
-    scriptSrc: ["'self'", "'unsafe-inline'"],
-    objectSrc: ["'none'"],
-    upgradeInsecureRequests: [],
-  },
-}));
-app.use(helmet.hsts({ maxAge: 31536000, includeSubDomains: true }));
 
 // General rate limiter (all requests)
 const generalLimiter = rateLimit({
@@ -41,8 +28,6 @@ const generalLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
 });
-// CSRF Protection
-app.use(csurf({ cookie: true }));
 app.use(generalLimiter);
 
 // Auth-specific rate limiter (stricter)
@@ -67,19 +52,6 @@ app.use("/api/helmet-configs", require("./routes/frameConfigRoutes")); // Update
 app.use("/api/orders", require("./routes/orderRoutes"));
 app.use("/api/upload", require("./routes/uploadRoutes"));
 app.use("/api/payments", require("./routes/paymentRoutes"));
-
-// Security status endpoint
-app.get('/api/security/status', (req, res) => {
-  res.json({
-    helmet: true,
-    csp: true,
-    hsts: true,
-    cors: true,
-    csrf: true,
-    csrfToken: req.csrfToken ? req.csrfToken() : null
-  });
-});
-
 app.use("/api/activity-logs", require("./routes/activityLogRoutes"));
 
 // 404 Handler

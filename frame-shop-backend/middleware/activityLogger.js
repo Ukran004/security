@@ -10,4 +10,3 @@ async function logActivity({ userId, action, details, ip }) {
 }
 
 module.exports = logActivity;
-

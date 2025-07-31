@@ -1,7 +1,7 @@
 const Helmet = require("../models/Helmet");
 const logActivity = require('../middleware/activityLogger');
 
-
+// Get all helmets with filtering and pagination
 exports.getAllHelmets = async (req, res) => {
   try {
     const {
@@ -32,6 +32,7 @@ exports.getAllHelmets = async (req, res) => {
       if (maxPrice) filter.price.$lte = parseFloat(maxPrice);
     }
 
+    // Search functionality
     if (search) {
       filter.$or = [
         { name: { $regex: search, $options: 'i' } },
@@ -41,7 +42,7 @@ exports.getAllHelmets = async (req, res) => {
       ];
     }
 
-    
+    // Sorting
     const sortOptions = {};
     sortOptions[sortBy] = sortOrder === 'desc' ? -1 : 1;
 
@@ -69,7 +70,7 @@ exports.getAllHelmets = async (req, res) => {
   }
 };
 
-// Get 
+// Get single helmet by ID
 exports.getHelmetById = async (req, res) => {
   try {
     const helmet = await Helmet.findById(req.params.id);
